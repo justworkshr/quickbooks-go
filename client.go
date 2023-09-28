@@ -24,6 +24,8 @@ package quickbooks
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -177,6 +179,12 @@ func (c *Client) query(query string, out interface{}) error {
 	if res.StatusCode != http.StatusOK {
 		return parseFailure(res)
 	}
+
+	byts, err := io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("error reading body: %s", err)
+	}
+	fmt.Println(string(byts))
 
 	return json.NewDecoder(res.Body).Decode(out)
 }
